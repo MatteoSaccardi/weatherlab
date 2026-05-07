@@ -33,8 +33,8 @@ The tool should expose the assumptions clearly enough for a theoretical particle
 - [x] Create a local Python virtual environment for scientific tooling.
 - [x] Cross-check fetched data against at least one independent source or API endpoint when possible.
 - [x] Add clear caveats about physical limits and forecast interpretation.
-- [ ] Run local verification and fix visible UI/data issues.
-- [ ] Prepare deployment path for online access.
+- [x] Run local verification and fix visible UI/data issues.
+- [x] Prepare deployment path for online access.
 - [x] Ask user to test the running app.
 - [x] Fix clipped y-axis labels and add explicit y-axis variable labels.
 - [x] Add arbitrary location search through Open-Meteo geocoding.
@@ -46,6 +46,7 @@ The tool should expose the assumptions clearly enough for a theoretical particle
 - [x] Update local Git remote to renamed GitHub repository `MatteoSaccardi/weatherlab`.
 - [x] Add GitHub Pages Actions workflow.
 - [x] Patch GitHub Pages workflow with first-run Pages enablement and Node 24-compatible action versions.
+- [x] Update README to reflect arbitrary location search and multiple forecast sources.
 - [ ] Publish to a public hosting provider.
 
 ## Proposed Architecture
@@ -111,6 +112,7 @@ For a selected variable, the app estimates an additive bias and residual scale u
 - Local Git commit created: `500eb77 Prepare static weather forecast app`.
 - Renamed GitHub repository verified at `https://github.com/MatteoSaccardi/weatherlab`.
 - Expected GitHub Pages URL: `https://MatteoSaccardi.github.io/weatherlab/`.
+- Repository visibility was changed to public by the user before retrying Pages deployment.
 
 ## Python Environment
 
