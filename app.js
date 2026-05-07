@@ -126,25 +126,16 @@ const VARIABLES = {
     floor: 0,
     ceiling: 100,
   },
-  european_aqi: {
-    label: "European AQI",
-    unit: "EAQI",
-    current: "european_aqi",
+  air_quality_index: {
+    label: "Air quality index",
+    unit: "AQI",
+    current: "air_quality_index",
     minSigma: 1.0,
     priorSigma: 8.0,
     floor: 0,
     ceiling: null,
     family: "air",
-  },
-  us_aqi: {
-    label: "U.S. AQI",
-    unit: "AQI",
-    current: "us_aqi",
-    minSigma: 2.0,
-    priorSigma: 12.0,
-    floor: 0,
-    ceiling: 500,
-    family: "air",
+    resolver: resolveAqiVariable,
   },
   pm2_5: {
     label: "PM2.5",
@@ -337,11 +328,12 @@ async function fetchForecast(region, source, variableKey, variable) {
 }
 
 async function fetchAirQuality(region, variableKey, variable) {
+  const resolvedKey = variable.resolver ? variable.resolver(region) : variableKey;
   const params = new URLSearchParams({
     latitude: region.latitude,
     longitude: region.longitude,
-    current: variable.current || variableKey,
-    hourly: variableKey,
+    current: resolvedKey,
+    hourly: resolvedKey,
     forecast_days: "3",
     timezone: region.timezone,
   });
@@ -349,7 +341,11 @@ async function fetchAirQuality(region, variableKey, variable) {
   if (!response.ok) {
     throw new Error(`Open-Meteo air-quality request failed: ${response.status}`);
   }
-  return response.json();
+  const payload = await response.json();
+  if (resolvedKey !== variableKey) {
+    normalizeResolvedVariable(payload, resolvedKey, variableKey);
+  }
+  return payload;
 }
 
 function extractSeries(data, variableKey, variable) {
@@ -657,8 +653,11 @@ function interpretationText(variableKey, result) {
   if (variableKey === "precipitation_probability") {
     return `This is the model probability of measurable precipitation. It is usually more informative than precipitation amount when most hourly amounts are zero. Posterior residual scale is about ${sigma} percentage points.`;
   }
-  if (["european_aqi", "us_aqi", "pm2_5"].includes(variableKey)) {
-    return `Air-quality data come from Open-Meteo's CAMS-based air-quality API. The sampler post-processes the public pollution forecast with the same bias/noise model; posterior residual scale is about ${sigma}.`;
+  if (variableKey === "air_quality_index") {
+    return `Air-quality data come from Open-Meteo's CAMS-based air-quality API. The app automatically uses the local convention: U.S. AQI for U.S. locations and European AQI elsewhere. Posterior residual scale is about ${sigma}.`;
+  }
+  if (variableKey === "pm2_5") {
+    return `PM2.5 data come from Open-Meteo's CAMS-based air-quality API. The sampler post-processes the public pollution forecast with the same bias/noise model; posterior residual scale is about ${sigma} ug/m3.`;
   }
   return `The median line is the posterior predictive median. The darker band is 50%, the lighter band is 90%, with posterior residual scale about ${sigma}.`;
 }
@@ -672,6 +671,25 @@ function setBusy(isBusy, text = "Running") {
 
 function updateTaskProgress() {
   window.localStorage.setItem("weather-mcmc-last-run", new Date().toISOString());
+}
+
+function resolveAqiVariable(region) {
+  return region.timezone?.startsWith("America/") ? "us_aqi" : "european_aqi";
+}
+
+function normalizeResolvedVariable(payload, resolvedKey, variableKey) {
+  if (payload.current && resolvedKey in payload.current) {
+    payload.current[variableKey] = payload.current[resolvedKey];
+  }
+  if (payload.hourly && resolvedKey in payload.hourly) {
+    payload.hourly[variableKey] = payload.hourly[resolvedKey];
+  }
+  if (payload.current_units && resolvedKey in payload.current_units) {
+    payload.current_units[variableKey] = "AQI";
+  }
+  if (payload.hourly_units && resolvedKey in payload.hourly_units) {
+    payload.hourly_units[variableKey] = "AQI";
+  }
 }
 
 function boundValue(value, variable) {
