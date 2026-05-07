@@ -13,6 +13,7 @@ The app fetches public weather forecasts from Open-Meteo, then applies a transpa
   - NOAA GFS/HRRR
   - ECMWF open data
 - Plot temperature, precipitation amount, rain probability, wind speed, surface pressure, cloud cover, local air quality index, and PM2.5.
+- Show an AQI guide with local thresholds when the air quality index is selected.
 - Show posterior predictive median, 50% band, 90% band, sampled trajectories, and raw deterministic forecast.
 - Hover for values and zoom the 48-hour time window.
 

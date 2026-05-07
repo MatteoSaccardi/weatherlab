@@ -119,6 +119,7 @@ For a selected variable, the app estimates an additive bias and residual scale u
 - Search now runs a one-off forecast without adding the searched place to the Region menu.
 - Added rain probability, local air quality index, and PM2.5 variables.
 - Air quality index now uses one readable label and chooses U.S. AQI for U.S. locations, European AQI elsewhere.
+- Added an AQI guide panel with U.S. and European threshold descriptions.
 - README now describes the Metropolis-Hastings parameters and posterior predictive construction.
 
 ## Python Environment

@@ -191,6 +191,9 @@ const els = {
   sigma: document.querySelector("#sigma-value"),
   acceptance: document.querySelector("#acceptance-value"),
   interpretation: document.querySelector("#interpretation"),
+  aqiGuide: document.querySelector("#aqi-guide"),
+  aqiGuideTitle: document.querySelector("#aqi-guide-title"),
+  aqiGuideList: document.querySelector("#aqi-guide-list"),
 };
 
 function init() {
@@ -436,6 +439,7 @@ function renderResult(region, source, variableKey, variable, series, result) {
   els.sigma.textContent = `${format(result.meanSigma)} ${variable.unit}`;
   els.acceptance.textContent = `${Math.round(result.acceptance * 100)}%`;
   els.interpretation.textContent = interpretationText(variableKey, result);
+  updateAqiGuide(variableKey, region);
   chartState = { series, result, variable };
   redrawChart();
 }
@@ -672,6 +676,52 @@ function setBusy(isBusy, text = "Running") {
 function updateTaskProgress() {
   window.localStorage.setItem("weather-mcmc-last-run", new Date().toISOString());
 }
+
+function updateAqiGuide(variableKey, region) {
+  if (variableKey !== "air_quality_index") {
+    els.aqiGuide.hidden = true;
+    els.aqiGuideList.replaceChildren();
+    return;
+  }
+  const guide = resolveAqiVariable(region) === "us_aqi" ? US_AQI_GUIDE : EU_AQI_GUIDE;
+  els.aqiGuide.hidden = false;
+  els.aqiGuideTitle.textContent = guide.title;
+  els.aqiGuideList.replaceChildren(
+    ...guide.rows.map((row) => {
+      const item = document.createElement("li");
+      const range = document.createElement("strong");
+      const description = document.createElement("span");
+      range.textContent = row.range;
+      description.textContent = row.label;
+      item.append(range, description);
+      return item;
+    }),
+  );
+}
+
+const US_AQI_GUIDE = {
+  title: "U.S. AQI guide",
+  rows: [
+    { range: "0-50", label: "Good" },
+    { range: "51-100", label: "Moderate" },
+    { range: "101-150", label: "Unhealthy for sensitive groups" },
+    { range: "151-200", label: "Unhealthy" },
+    { range: "201-300", label: "Very unhealthy" },
+    { range: "301+", label: "Hazardous" },
+  ],
+};
+
+const EU_AQI_GUIDE = {
+  title: "European AQI guide",
+  rows: [
+    { range: "0-20", label: "Good" },
+    { range: "21-40", label: "Fair" },
+    { range: "41-60", label: "Moderate" },
+    { range: "61-80", label: "Poor" },
+    { range: "81-100", label: "Very poor" },
+    { range: "101+", label: "Extremely poor" },
+  ],
+};
 
 function resolveAqiVariable(region) {
   return region.timezone?.startsWith("America/") ? "us_aqi" : "european_aqi";

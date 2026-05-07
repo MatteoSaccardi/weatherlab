@@ -278,6 +278,33 @@ dd {
   line-height: 1.55;
 }
 
+.aqi-guide {
+  margin-top: 18px;
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+}
+
+.aqi-guide ul {
+  display: grid;
+  gap: 6px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aqi-guide li {
+  display: grid;
+  grid-template-columns: 78px 1fr;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.35;
+}
+
+.aqi-guide strong {
+  color: var(--ink);
+}
+
 .notes {
   margin-top: 16px;
   padding: 20px;
