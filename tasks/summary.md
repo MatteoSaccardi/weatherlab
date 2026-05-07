@@ -45,6 +45,7 @@ The tool should expose the assumptions clearly enough for a theoretical particle
 - [x] Initialize local Git repository and create deployment-ready commit.
 - [x] Update local Git remote to renamed GitHub repository `MatteoSaccardi/weatherlab`.
 - [x] Add GitHub Pages Actions workflow.
+- [x] Patch GitHub Pages workflow with first-run Pages enablement and Node 24-compatible action versions.
 - [ ] Publish to a public hosting provider.
 
 ## Proposed Architecture

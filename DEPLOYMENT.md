@@ -10,6 +10,8 @@ This project is currently a static web app: `index.html`, `styles.css`, and `app
 4. Under `Build and deployment`, choose `GitHub Actions`.
 5. The included `.github/workflows/pages.yml` workflow will publish the static site after each push to `main`.
 
+The workflow also sets `enablement: true` on `actions/configure-pages`, so it can create the Pages site on first run if repository permissions allow it. If GitHub still returns `Get Pages site failed`, set the Pages source to `GitHub Actions` manually in the repository settings and rerun the workflow.
+
 GitHub will publish the site at a URL like:
 
 ```text
