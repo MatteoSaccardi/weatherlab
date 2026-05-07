@@ -1,37 +1,72 @@
 const REGIONS = [
   {
+    id: "albano-laziale",
+    name: "Albano Laziale",
+    latitude: 41.72748,
+    longitude: 12.659,
+    timezone: "Europe/Rome",
+  },
+  {
+    id: "cernusco-sul-naviglio",
+    name: "Cernusco Sul Naviglio",
+    latitude: 45.52526,
+    longitude: 9.33297,
+    timezone: "Europe/Rome",
+  },
+  {
+    id: "edinburgh",
+    name: "Edinburgh",
+    latitude: 55.95206,
+    longitude: -3.19648,
+    timezone: "Europe/London",
+  },
+  {
     id: "fort-collins",
-    name: "Fort Collins, Colorado",
+    name: "Fort Collins",
     latitude: 40.5853,
     longitude: -105.0844,
     timezone: "America/Denver",
   },
   {
-    id: "milan",
-    name: "Milan, Lombardia",
+    id: "mendrisio",
+    name: "Mendrisio",
+    latitude: 45.87019,
+    longitude: 8.9816,
+    timezone: "Europe/Zurich",
+  },
+  {
+    id: "milano",
+    name: "Milano",
     latitude: 45.4642,
     longitude: 9.19,
     timezone: "Europe/Rome",
   },
   {
-    id: "bergamo",
-    name: "Bergamo, Lombardia",
-    latitude: 45.6983,
-    longitude: 9.6773,
+    id: "roma",
+    name: "Roma",
+    latitude: 41.9028,
+    longitude: 12.4964,
     timezone: "Europe/Rome",
   },
   {
-    id: "brescia",
-    name: "Brescia, Lombardia",
-    latitude: 45.5416,
-    longitude: 10.2118,
+    id: "sesto-san-giovanni",
+    name: "Sesto San Giovanni",
+    latitude: 45.53329,
+    longitude: 9.22585,
     timezone: "Europe/Rome",
   },
   {
-    id: "como",
-    name: "Como, Lombardia",
-    latitude: 45.8081,
-    longitude: 9.0852,
+    id: "tomich",
+    name: "Tomich (Scotland)",
+    latitude: 57.30524,
+    longitude: -4.81215,
+    timezone: "Europe/London",
+  },
+  {
+    id: "traversetolo",
+    name: "Traversetolo (Parma)",
+    latitude: 44.64244,
+    longitude: 10.38036,
     timezone: "Europe/Rome",
   },
 ];
@@ -108,7 +143,8 @@ const els = {
   region: document.querySelector("#region-select"),
   source: document.querySelector("#source-select"),
   search: document.querySelector("#location-search"),
-  addLocation: document.querySelector("#add-location"),
+  searchLocation: document.querySelector("#search-location"),
+  runForecast: document.querySelector("#run-forecast"),
   variable: document.querySelector("#variable-select"),
   samples: document.querySelector("#sample-count"),
   seed: document.querySelector("#seed"),
@@ -133,11 +169,11 @@ function init() {
     event.preventDefault();
     runForecast();
   });
-  els.addLocation.addEventListener("click", addSearchedLocation);
+  els.searchLocation.addEventListener("click", searchLocationForecast);
   els.search.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
       event.preventDefault();
-      addSearchedLocation();
+      searchLocationForecast();
     }
   });
   els.zoomIn.addEventListener("click", () => zoomChart(0.55));
@@ -152,8 +188,8 @@ function init() {
   runForecast();
 }
 
-async function runForecast() {
-  const region = regions.find((item) => item.id === els.region.value) || regions[0];
+async function runForecast(regionOverride = null) {
+  const region = regionOverride || regions.find((item) => item.id === els.region.value) || regions[0];
   const variableKey = els.variable.value;
   const variable = VARIABLES[variableKey];
   const source = SOURCES[els.source.value] || SOURCES.best;
@@ -189,7 +225,7 @@ function renderRegionOptions(selectedId = null) {
   if (selectedId) els.region.value = selectedId;
 }
 
-async function addSearchedLocation() {
+async function searchLocationForecast() {
   const query = els.search.value.trim();
   if (!query) return;
   setBusy(true, "Searching");
@@ -204,22 +240,20 @@ async function addSearchedLocation() {
     if (!response.ok) throw new Error(`Geocoding failed: ${response.status}`);
     const payload = await response.json();
     const place = payload.results?.[0];
-    if (!place) throw new Error(`No location found for "${query}".`);
+    if (!place) {
+      throw new Error(`No location found for "${query}". Try a nearby town or add a country name.`);
+    }
     const region = {
-      id: `custom-${place.id}`,
+      id: `search-${place.id}`,
       name: [place.name, place.admin1, place.country].filter(Boolean).join(", "),
       latitude: place.latitude,
       longitude: place.longitude,
       timezone: place.timezone || "auto",
     };
-    const existingIndex = regions.findIndex((item) => item.id === region.id);
-    if (existingIndex >= 0) regions[existingIndex] = region;
-    else regions.push(region);
-    renderRegionOptions(region.id);
     els.search.value = "";
-    await runForecast();
+    await runForecast(region);
   } catch (error) {
-    els.status.textContent = "Error";
+    els.status.textContent = "No match";
     els.subtitle.textContent = error.message;
     console.error(error);
   } finally {
@@ -354,7 +388,7 @@ function drawChart(series, result, variable) {
   const ctx = canvas.getContext("2d");
   const width = canvas.width;
   const height = canvas.height;
-  const pad = { left: 106, right: 28, top: 30, bottom: 82 };
+  const pad = { left: 146, right: 28, top: 30, bottom: 82 };
   ctx.clearRect(0, 0, width, height);
 
   const view = getView(series.forecast.length);
@@ -405,10 +439,10 @@ function drawGrid(ctx, width, height, pad, min, max, variable) {
     ctx.moveTo(pad.left, yy);
     ctx.lineTo(width - pad.right, yy);
     ctx.stroke();
-    ctx.fillText(`${formatAxis(value)} ${variable.unit}`, pad.left - 12, yy);
+    ctx.fillText(`${formatAxis(value)} ${variable.unit}`, pad.left - 16, yy);
   });
   ctx.save();
-  ctx.translate(22, pad.top + (height - pad.top - pad.bottom) / 2);
+  ctx.translate(24, pad.top + (height - pad.top - pad.bottom) / 2);
   ctx.rotate(-Math.PI / 2);
   ctx.textAlign = "center";
   ctx.fillStyle = "#18212a";
@@ -558,9 +592,10 @@ function interpretationText(variableKey, result) {
 }
 
 function setBusy(isBusy, text = "Running") {
-  els.form.querySelector("button").disabled = isBusy;
+  els.searchLocation.disabled = isBusy;
+  els.runForecast.disabled = isBusy;
   if (isBusy) els.status.textContent = text;
-  else if (els.status.textContent !== "Error") els.status.textContent = "Ready";
+  else if (!["Error", "No match"].includes(els.status.textContent)) els.status.textContent = "Ready";
 }
 
 function updateTaskProgress() {

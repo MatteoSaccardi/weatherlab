@@ -115,6 +115,8 @@ For a selected variable, the app estimates an additive bias and residual scale u
 - Repository visibility was changed to public by the user before retrying Pages deployment.
 - A fallback `gh-pages` branch was pushed from `main`.
 - Public URL returned HTTP 200 on May 7, 2026 UTC.
+- Preset region list was narrowed to the requested alphabetized locations.
+- Search now runs a one-off forecast without adding the searched place to the Region menu.
 
 ## Python Environment
 

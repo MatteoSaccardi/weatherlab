@@ -6,7 +6,7 @@ The app fetches public weather forecasts from Open-Meteo, then applies a transpa
 
 ## Features
 
-- Suggested locations for Fort Collins and several Lombardia cities.
+- Suggested locations: Albano Laziale, Cernusco Sul Naviglio, Edinburgh, Fort Collins, Mendrisio, Milano, Roma, Sesto San Giovanni, Tomich, and Traversetolo.
 - Search for arbitrary locations by place name.
 - Compare forecast sources exposed through Open-Meteo:
   - Best match
