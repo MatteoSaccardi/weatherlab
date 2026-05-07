@@ -117,6 +117,8 @@ For a selected variable, the app estimates an additive bias and residual scale u
 - Public URL returned HTTP 200 on May 7, 2026 UTC.
 - Preset region list was narrowed to the requested alphabetized locations.
 - Search now runs a one-off forecast without adding the searched place to the Region menu.
+- Added rain probability, European AQI, U.S. AQI, and PM2.5 variables.
+- README now describes the Metropolis-Hastings parameters and posterior predictive construction.
 
 ## Python Environment
 

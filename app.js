@@ -82,13 +82,22 @@ const VARIABLES = {
     ceiling: null,
   },
   precipitation: {
-    label: "Precipitation",
+    label: "Precipitation amount",
     unit: "mm/h",
     current: "precipitation",
     minSigma: 0.08,
     priorSigma: 0.8,
     floor: 0,
     ceiling: null,
+  },
+  precipitation_probability: {
+    label: "Rain probability",
+    unit: "%",
+    current: null,
+    minSigma: 2.0,
+    priorSigma: 12.0,
+    floor: 0,
+    ceiling: 100,
   },
   wind_speed_10m: {
     label: "Wind speed",
@@ -116,6 +125,36 @@ const VARIABLES = {
     priorSigma: 14.0,
     floor: 0,
     ceiling: 100,
+  },
+  european_aqi: {
+    label: "European AQI",
+    unit: "EAQI",
+    current: "european_aqi",
+    minSigma: 1.0,
+    priorSigma: 8.0,
+    floor: 0,
+    ceiling: null,
+    family: "air",
+  },
+  us_aqi: {
+    label: "U.S. AQI",
+    unit: "AQI",
+    current: "us_aqi",
+    minSigma: 2.0,
+    priorSigma: 12.0,
+    floor: 0,
+    ceiling: 500,
+    family: "air",
+  },
+  pm2_5: {
+    label: "PM2.5",
+    unit: "ug/m3",
+    current: "pm2_5",
+    minSigma: 0.8,
+    priorSigma: 4.0,
+    floor: 0,
+    ceiling: null,
+    family: "air",
   },
 };
 
@@ -198,7 +237,7 @@ async function runForecast(regionOverride = null) {
 
   setBusy(true, "Fetching");
   try {
-    const data = await fetchForecast(region, source);
+    const data = await fetchForecast(region, source, variableKey, variable);
     setBusy(true, "Sampling");
     const series = extractSeries(data, variableKey, variable);
     const result = samplePosteriorPredictive(series, variable, sampleCount, seed);
@@ -261,7 +300,10 @@ async function searchLocationForecast() {
   }
 }
 
-async function fetchForecast(region, source) {
+async function fetchForecast(region, source, variableKey, variable) {
+  if (variable.family === "air") {
+    return fetchAirQuality(region, variableKey, variable);
+  }
   const current = [
     "temperature_2m",
     "precipitation",
@@ -269,7 +311,14 @@ async function fetchForecast(region, source) {
     "surface_pressure",
     "cloud_cover",
   ].join(",");
-  const hourly = current;
+  const hourly = [
+    "temperature_2m",
+    "precipitation",
+    "precipitation_probability",
+    "wind_speed_10m",
+    "surface_pressure",
+    "cloud_cover",
+  ].join(",");
   const params = new URLSearchParams({
     latitude: region.latitude,
     longitude: region.longitude,
@@ -287,11 +336,27 @@ async function fetchForecast(region, source) {
   return response.json();
 }
 
+async function fetchAirQuality(region, variableKey, variable) {
+  const params = new URLSearchParams({
+    latitude: region.latitude,
+    longitude: region.longitude,
+    current: variable.current || variableKey,
+    hourly: variableKey,
+    forecast_days: "3",
+    timezone: region.timezone,
+  });
+  const response = await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?${params}`);
+  if (!response.ok) {
+    throw new Error(`Open-Meteo air-quality request failed: ${response.status}`);
+  }
+  return response.json();
+}
+
 function extractSeries(data, variableKey, variable) {
   const now = data.current?.time || data.hourly?.time?.[0];
   const times = data.hourly?.time || [];
   const values = data.hourly?.[variableKey] || [];
-  let currentValue = Number(data.current?.[variable.current]);
+  let currentValue = Number(data.current?.[variable.current || variableKey]);
   const startIndex = Math.max(0, times.findIndex((time) => time >= now));
   if (!Number.isFinite(currentValue)) currentValue = Number(values[startIndex]);
   const endIndex = Math.min(startIndex + 48, values.length);
@@ -368,7 +433,8 @@ function logPosterior(state, anchorResidual, variable) {
 
 function renderResult(region, source, variableKey, variable, series, result) {
   els.title.textContent = `${variable.label}: ${region.name}`;
-  els.subtitle.textContent = `${source.label}, ${series.times[0]} to ${series.times[series.times.length - 1]} local time`;
+  const sourceLabel = variable.family === "air" ? "Open-Meteo air quality (CAMS)" : source.label;
+  els.subtitle.textContent = `${sourceLabel}, ${series.times[0]} to ${series.times[series.times.length - 1]} local time`;
   els.current.textContent = `${format(series.currentValue)} ${variable.unit}`;
   els.bias.textContent = `${format(result.meanBias)} ${variable.unit}`;
   els.sigma.textContent = `${format(result.meanSigma)} ${variable.unit}`;
@@ -586,7 +652,13 @@ function drawEmptyChart() {
 function interpretationText(variableKey, result) {
   const sigma = format(result.meanSigma);
   if (variableKey === "precipitation") {
-    return `Precipitation is bounded below at zero, so the upper band is more informative than symmetric errors. Posterior residual scale is about ${sigma} mm/h.`;
+    return `This is precipitation amount, not probability. Many public short-range forecasts report zero rain for most hours, so locations can look similar when the deterministic amount field is zero. Posterior residual scale is about ${sigma} mm/h.`;
+  }
+  if (variableKey === "precipitation_probability") {
+    return `This is the model probability of measurable precipitation. It is usually more informative than precipitation amount when most hourly amounts are zero. Posterior residual scale is about ${sigma} percentage points.`;
+  }
+  if (["european_aqi", "us_aqi", "pm2_5"].includes(variableKey)) {
+    return `Air-quality data come from Open-Meteo's CAMS-based air-quality API. The sampler post-processes the public pollution forecast with the same bias/noise model; posterior residual scale is about ${sigma}.`;
   }
   return `The median line is the posterior predictive median. The darker band is 50%, the lighter band is 90%, with posterior residual scale about ${sigma}.`;
 }

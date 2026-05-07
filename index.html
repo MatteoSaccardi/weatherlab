@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Probabilistic Weather MCMC</title>
-    <link rel="stylesheet" href="styles.css?v=20260507-1">
+    <link rel="stylesheet" href="styles.css?v=20260507-2">
   </head>
   <body>
     <main class="app-shell">
@@ -43,10 +43,14 @@
             Variable
             <select id="variable-select" name="variable">
               <option value="temperature_2m">Temperature</option>
-              <option value="precipitation">Precipitation</option>
+              <option value="precipitation">Precipitation amount</option>
+              <option value="precipitation_probability">Rain probability</option>
               <option value="wind_speed_10m">Wind speed</option>
               <option value="surface_pressure">Surface pressure</option>
               <option value="cloud_cover">Cloud cover</option>
+              <option value="european_aqi">European AQI</option>
+              <option value="us_aqi">U.S. AQI</option>
+              <option value="pm2_5">PM2.5</option>
             </select>
           </label>
 
@@ -67,7 +71,7 @@
       <section class="status-band" aria-live="polite">
         <div>
           <span class="label">Data source</span>
-          <span>Open-Meteo forecast API</span>
+          <span>Open-Meteo forecast and air-quality APIs</span>
         </div>
         <div>
           <span class="label">Model</span>
@@ -135,6 +139,6 @@
       </section>
     </main>
 
-    <script src="app.js?v=20260507-1"></script>
+    <script src="app.js?v=20260507-2"></script>
   </body>
 </html>
