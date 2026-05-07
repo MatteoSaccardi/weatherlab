@@ -40,6 +40,7 @@ The tool should expose the assumptions clearly enough for a theoretical particle
 - [x] Add chart hover tooltip and time zoom controls.
 - [x] Improve time-axis tick labels and vertical grid lines.
 - [x] Prepare static-host deployment files.
+- [x] Initialize local Git repository and create deployment-ready commit.
 - [ ] Publish to a public hosting provider.
 
 ## Proposed Architecture
@@ -102,6 +103,7 @@ For a selected variable, the app estimates an additive bias and residual scale u
 - `scripts/check_open_meteo.py` passed for Fort Collins, Milan, Bergamo, Brescia, and Como.
 - Local static server started from `.venv` at `http://localhost:8000/`.
 - Live endpoint checks passed for the Open-Meteo NOAA GFS/HRRR endpoint, ECMWF endpoint, and geocoding endpoint. ECMWF does not return a `current` block for the tested query, so the app falls back to the first forecast hour as the analysis anchor.
+- Local Git commit created: `500eb77 Prepare static weather forecast app`.
 
 ## Python Environment
 
