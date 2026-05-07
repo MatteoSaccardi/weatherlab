@@ -7,16 +7,19 @@ This project is currently a static web app: `index.html`, `styles.css`, and `app
 1. Create a new public GitHub repository, for example `weatherlab`.
 2. Push this directory to that repository.
 3. In GitHub, open `Settings -> Pages`.
-4. Under `Build and deployment`, choose:
-   - Source: `Deploy from a branch`
-   - Branch: `main`
-   - Folder: `/ (root)`
-5. Save.
+4. Under `Build and deployment`, choose `GitHub Actions`.
+5. The included `.github/workflows/pages.yml` workflow will publish the static site after each push to `main`.
 
 GitHub will publish the site at a URL like:
 
 ```text
 https://YOUR-USERNAME.github.io/weatherlab/
+```
+
+For this repository, the expected URL is:
+
+```text
+https://MatteoSaccardi.github.io/weatherlab/
 ```
 
 ## Netlify

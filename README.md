@@ -37,3 +37,9 @@ index.html
 ```
 
 No build command is required.
+
+Expected GitHub Pages URL:
+
+```text
+https://MatteoSaccardi.github.io/weatherlab/
+```
