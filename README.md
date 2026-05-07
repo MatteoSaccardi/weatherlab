@@ -57,5 +57,5 @@ No build command is required.
 Expected GitHub Pages URL:
 
 ```text
-https://MatteoSaccardi.github.io/weatherlab/
+https://matteosaccardi.github.io/weatherlab/
 ```

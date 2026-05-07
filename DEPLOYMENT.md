@@ -21,7 +21,7 @@ https://YOUR-USERNAME.github.io/weatherlab/
 For this repository, the expected URL is:
 
 ```text
-https://MatteoSaccardi.github.io/weatherlab/
+https://matteosaccardi.github.io/weatherlab/
 ```
 
 ## Netlify

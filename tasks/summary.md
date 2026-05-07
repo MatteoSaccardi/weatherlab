@@ -47,7 +47,7 @@ The tool should expose the assumptions clearly enough for a theoretical particle
 - [x] Add GitHub Pages Actions workflow.
 - [x] Patch GitHub Pages workflow with first-run Pages enablement and Node 24-compatible action versions.
 - [x] Update README to reflect arbitrary location search and multiple forecast sources.
-- [ ] Publish to a public hosting provider.
+- [x] Publish to a public hosting provider.
 
 ## Proposed Architecture
 
@@ -111,9 +111,10 @@ For a selected variable, the app estimates an additive bias and residual scale u
 - Live endpoint checks passed for the Open-Meteo NOAA GFS/HRRR endpoint, ECMWF endpoint, and geocoding endpoint. ECMWF does not return a `current` block for the tested query, so the app falls back to the first forecast hour as the analysis anchor.
 - Local Git commit created: `500eb77 Prepare static weather forecast app`.
 - Renamed GitHub repository verified at `https://github.com/MatteoSaccardi/weatherlab`.
-- Expected GitHub Pages URL: `https://MatteoSaccardi.github.io/weatherlab/`.
+- Public GitHub Pages URL: `https://matteosaccardi.github.io/weatherlab/`.
 - Repository visibility was changed to public by the user before retrying Pages deployment.
-- A fallback `gh-pages` branch was pushed from `main`, but GitHub Pages still needs to be enabled in repository settings before the public URL resolves.
+- A fallback `gh-pages` branch was pushed from `main`.
+- Public URL returned HTTP 200 on May 7, 2026 UTC.
 
 ## Python Environment
 
