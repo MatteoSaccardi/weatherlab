@@ -113,6 +113,7 @@ For a selected variable, the app estimates an additive bias and residual scale u
 - Renamed GitHub repository verified at `https://github.com/MatteoSaccardi/weatherlab`.
 - Expected GitHub Pages URL: `https://MatteoSaccardi.github.io/weatherlab/`.
 - Repository visibility was changed to public by the user before retrying Pages deployment.
+- A fallback `gh-pages` branch was pushed from `main`, but GitHub Pages still needs to be enabled in repository settings before the public URL resolves.
 
 ## Python Environment
 
