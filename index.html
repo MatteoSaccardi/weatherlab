@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Probabilistic Weather MCMC</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="control-panel" aria-label="Forecast controls">
+        <div>
+          <p class="eyebrow">Two-day probabilistic forecast</p>
+          <h1>Weather MCMC Lab</h1>
+          <p class="lede">
+            Public numerical forecasts are converted into posterior predictive sample paths with a transparent bias and noise model.
+          </p>
+        </div>
+
+        <form id="forecast-form" class="controls">
+          <label>
+            Region
+            <select id="region-select" name="region"></select>
+          </label>
+
+          <label>
+            Search place
+            <input id="location-search" name="location" type="search" placeholder="e.g. Lecco, Italy">
+          </label>
+
+          <button id="add-location" class="secondary-button" type="button">Add place</button>
+
+          <label>
+            Source
+            <select id="source-select" name="source">
+              <option value="best">Open-Meteo best match</option>
+              <option value="noaa">NOAA GFS/HRRR</option>
+              <option value="ecmwf">ECMWF open data</option>
+            </select>
+          </label>
+
+          <label>
+            Variable
+            <select id="variable-select" name="variable">
+              <option value="temperature_2m">Temperature</option>
+              <option value="precipitation">Precipitation</option>
+              <option value="wind_speed_10m">Wind speed</option>
+              <option value="surface_pressure">Surface pressure</option>
+              <option value="cloud_cover">Cloud cover</option>
+            </select>
+          </label>
+
+          <label>
+            Samples
+            <input id="sample-count" name="samples" type="number" min="200" max="4000" step="100" value="1200">
+          </label>
+
+          <label>
+            Seed
+            <input id="seed" name="seed" type="number" min="1" max="999999" step="1" value="271828">
+          </label>
+
+          <button type="submit">Run forecast</button>
+        </form>
+      </section>
+
+      <section class="status-band" aria-live="polite">
+        <div>
+          <span class="label">Data source</span>
+          <span>Open-Meteo forecast API</span>
+        </div>
+        <div>
+          <span class="label">Model</span>
+          <span>Metropolis-Hastings bias/noise posterior + correlated predictive paths</span>
+        </div>
+        <div>
+          <span class="label">Window</span>
+          <span>Next 48 hours</span>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <article class="forecast-view">
+          <div class="section-header">
+            <div>
+              <h2 id="chart-title">Forecast</h2>
+              <p id="chart-subtitle">Run the model to fetch current data.</p>
+            </div>
+            <div class="chart-actions">
+              <button id="zoom-in" class="icon-button" type="button" title="Zoom in time">+</button>
+              <button id="zoom-out" class="icon-button" type="button" title="Zoom out time">-</button>
+              <button id="zoom-reset" class="icon-button" type="button" title="Reset zoom">Reset</button>
+              <div id="run-status" class="run-status">Idle</div>
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="forecast-chart" width="1120" height="560" aria-label="Forecast chart"></canvas>
+            <div id="chart-tooltip" class="chart-tooltip" hidden></div>
+          </div>
+        </article>
+
+        <aside class="diagnostics" aria-label="Model diagnostics">
+          <h2>Diagnostics</h2>
+          <dl>
+            <div>
+              <dt>Current value</dt>
+              <dd id="current-value">--</dd>
+            </div>
+            <div>
+              <dt>Posterior bias</dt>
+              <dd id="bias-value">--</dd>
+            </div>
+            <div>
+              <dt>Posterior sigma</dt>
+              <dd id="sigma-value">--</dd>
+            </div>
+            <div>
+              <dt>Acceptance</dt>
+              <dd id="acceptance-value">--</dd>
+            </div>
+          </dl>
+
+          <h3>Interpretation</h3>
+          <p id="interpretation">
+            This is probabilistic post-processing of public forecasts, not a replacement for operational meteorology.
+          </p>
+        </aside>
+      </section>
+
+      <section class="notes">
+        <h2>Model Notes</h2>
+        <p>
+          The sampler estimates a latent additive bias and residual scale for the chosen variable. The predictive ensemble then adds time-correlated innovations to the deterministic forecast, producing median and 90% credible bands.
+        </p>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
