@@ -1,4 +1,4 @@
-# Weather MCMC Lab
+# WeatherLab
 
 A static browser app for two-day probabilistic weather forecasts around Fort Collins, Colorado and Lombardia, Italy.
 
@@ -37,4 +37,3 @@ index.html
 ```
 
 No build command is required.
-

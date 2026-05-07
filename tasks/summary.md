@@ -7,6 +7,8 @@ Build a small web-accessible tool for probabilistic two-day weather forecasts us
 - Fort Collins, Colorado, USA
 - Lombardia, Italy, with emphasis on the Milan metro area
 
+Current project/public-site name: `weatherlab`.
+
 The tool should expose the assumptions clearly enough for a theoretical particle physicist to inspect and critique the statistical model.
 
 ## Feasibility Notes

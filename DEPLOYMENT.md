@@ -4,7 +4,7 @@ This project is currently a static web app: `index.html`, `styles.css`, and `app
 
 ## Recommended Simple Option: GitHub Pages
 
-1. Create a new public GitHub repository, for example `weather-mcmc-lab`.
+1. Create a new public GitHub repository, for example `weatherlab`.
 2. Push this directory to that repository.
 3. In GitHub, open `Settings -> Pages`.
 4. Under `Build and deployment`, choose:
@@ -16,7 +16,7 @@ This project is currently a static web app: `index.html`, `styles.css`, and `app
 GitHub will publish the site at a URL like:
 
 ```text
-https://YOUR-USERNAME.github.io/weather-mcmc-lab/
+https://YOUR-USERNAME.github.io/weatherlab/
 ```
 
 ## Netlify
@@ -44,4 +44,3 @@ https://YOUR-USERNAME.github.io/weather-mcmc-lab/
 - The app calls public Open-Meteo APIs from the browser.
 - No API key is currently required.
 - If a future source requires an API key, a public static-only deployment should not embed a private key in `app.js`; use a small backend or serverless proxy.
-
